@@ -16,7 +16,7 @@ module.exports.createCard = (req, res) => {
       res.send(card);
       console.log(card);})
     .catch((err) => {
-      if (res.status(BAD_REQUEST_ERROR)) {
+      if (res.status(err.name === 'CastError' || err.name === 'ValidationError')) {
         return res.status(BAD_REQUEST_ERROR).send({ message: 'Переданы некорректные данные при создании карточки.' });
       }
       res.status(INTERNAL_SERVER_ERROR).send({ message: `Произошла ошибка ${err.name} c текстом ${err.message} и стектрейс ${err.stack}` });
@@ -32,7 +32,13 @@ module.exports.deleteCard = (req, res) => {
         res.send(card);
       }
     })
-    .catch(err => res.status(INTERNAL_SERVER_ERROR).send({ message: `Произошла ошибка ${err.name} c текстом ${err.message} и стектрейс ${err.stack}` }));
+    .catch((err) => {
+      if (err.name === 'CastError') {
+        res.status(BAD_REQUEST_ERROR).send({ message: 'Переданы некорректные данные карточки.'});
+      } else {
+        res.status(INTERNAL_SERVER_ERROR).send({ message: `Произошла ошибка ${err.name} c текстом ${err.message} и стектрейс ${err.stack}` });
+      }
+    });
 };
 
 //PUT /cards/:cardId/likes — поставить лайк карточке
@@ -45,10 +51,10 @@ module.exports.likeCard = (req, res) => {
     .orFail()
     .then(card => res.send(card))
     .catch((err) => {
-      if (res.status(BAD_REQUEST_ERROR)) {
+      if (err.name === 'CastError') {
         return res.status(BAD_REQUEST_ERROR).send({ message: 'Переданы некорректные данные для постановки/снятии лайка.' });
       }
-      if (res.status(NOT_FOUND)) {
+      if (err.name === 'DocumentNotFoundError') {
         return res.status(NOT_FOUND).send({ message: 'Передан несуществующий _id карточки.' });
       }
       res.status(INTERNAL_SERVER_ERROR).send({ message: `Произошла ошибка ${err.name} c текстом ${err.message} и стектрейс ${err.stack}` });
@@ -65,10 +71,10 @@ module.exports.dislikeCard = (req, res) => {
     .orFail()
     .then(card => res.send(card))
     .catch((err) => {
-      if (res.status(BAD_REQUEST_ERROR)) {
+      if (res.status(err.name === 'CastError')) {
         return res.status(BAD_REQUEST_ERROR).send({ message: 'Переданы некорректные данные для постановки/снятии лайка.' });
       }
-      if (res.status(NOT_FOUND)) {
+      if (err.name === 'DocumentNotFoundError') {
         return res.status(NOT_FOUND).send({ message: 'Передан несуществующий _id карточки.' });
       }
       res.status(INTERNAL_SERVER_ERROR).send({ message: `Произошла ошибка ${err.name} c текстом ${err.message} и стектрейс ${err.stack}` });
