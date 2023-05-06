@@ -9,6 +9,6 @@ router.post('/', createUser);
 
 router.post('/me', updateUser);
 
-router.post('/me/avatar', updateAvatar);
+router.patch('/me/avatar', updateAvatar);
 
 module.exports = router;

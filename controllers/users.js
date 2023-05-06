@@ -13,10 +13,10 @@ module.exports.getUserId = (req, res) => {
     .catch((err) => {
       if (err.name === 'CastError') {
         return res.status(BAD_REQUEST_ERROR).send({message: 'Некорректные данные при поиске пользователя по _id'});
-      };
+      }
       if (err.name === 'DocumentNotFoundError') {
         return res.status(NOT_FOUND).send({ message: 'Пользователь по указанному _id не найден.' });
-      };
+      }
       res.status(INTERNAL_SERVER_ERROR).send({ message: `Произошла ошибка по умолчанию ${err.name} c текстом ${err.message} и стектрейс ${err.stack}` });
     });};
 
