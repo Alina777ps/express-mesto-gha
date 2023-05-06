@@ -13,10 +13,10 @@ module.exports.getUserId = (req, res) => {
     .catch((err) => {
       if (err.name === 'CastError') {
         return res.status(BAD_REQUEST_ERROR).send({message: 'Некорректные данные при поиске пользователя по _id'});
-      }
+      };
       if (err.name === 'DocumentNotFoundError') {
         return res.status(NOT_FOUND).send({ message: 'Пользователь по указанному _id не найден.' });
-      }
+      };
       res.status(INTERNAL_SERVER_ERROR).send({ message: `Произошла ошибка по умолчанию ${err.name} c текстом ${err.message} и стектрейс ${err.stack}` });
     });};
 
@@ -43,10 +43,10 @@ module.exports.updateUser = (req, res) => {
     .orFail()
     .then(user => res.send(user))
     .catch((err) => {
-      if (err.name === 'ValidationError') {
+      if (err.name === 'CastError' || err.name === 'ValidationError') {
         return res.status(BAD_REQUEST_ERROR).send({ message: 'Переданы некорректные данные при обновлении профиля.' });
       }
-      if (err.name === 'CastError') {
+      if (err.name === 'DocumentNotFoundError') {
         return res.status(NOT_FOUND).send({ message: 'Пользователь с указанным _id не найден.' });
       }
       res.status(INTERNAL_SERVER_ERROR).send({ message: `Произошла ошибка по умолчанию ${err.name} c текстом ${err.message} и стектрейс ${err.stack}` });
