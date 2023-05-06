@@ -8,7 +8,7 @@ module.exports.getUser = (req, res) => {
 };
 
 module.exports.getUserId = (req, res) => {
-  User.findById(req.params._id)
+  User.findById(req.params.userId)
     .then((user) => res.status(200).send(user))
     .catch((err) => {
       if (err.name === 'CastError') {
@@ -36,7 +36,7 @@ module.exports.createUser = (req, res) => {
 //PATCH /users/me — обновляет профиль
 module.exports.updateUser = (req, res) => {
   const { name, about } = req.body;
-  User.findByIdAndUpdate(req.params._id, { name, about }, {
+  User.findByIdAndUpdate(req.user._id, { name, about }, {
     new: true, // обработчик then получит на вход обновлённую запись
     runValidators: true, // данные будут валидированы перед изменением
   })
@@ -56,7 +56,7 @@ module.exports.updateUser = (req, res) => {
 //PATCH /users/me/avatar — обновляет аватар
 module.exports.updateAvatar = (req, res) => {
   const { avatar } = req.body;
-  User.findByIdAndUpdate(req.params._id, { avatar }, {
+  User.findByIdAndUpdate(req.user._id, { avatar }, {
     new: true, // обработчик then получит на вход обновлённую запись
     runValidators: true, // данные будут валидированы перед изменением
   }
