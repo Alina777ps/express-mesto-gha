@@ -117,9 +117,9 @@ module.exports.dislikeCard = (req, res) => {
       }
     })
     .catch((err) => {
-      if (res.status(err.name === 'CastError')) {
+      if (err.name === 'CastError') {
         return res.status(BAD_REQUEST_ERROR).send({
-          message: 'Переданы некорректные данные для постановки/снятии лайка.',
+          message: 'Переданы некорректные данные для постановки/снятии лайка.'
         });
       }
       if (err.name === 'DocumentNotFoundError') {
