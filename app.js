@@ -12,7 +12,7 @@ app.use(bodyParser.json());
 
 app.use((req, res, next) => {
   req.user = {
-    _id: '6454a9d80f882c481aa1cd90'
+    _id: '6454a9d80f882c481aa1cd90',
   };
 
   next();
