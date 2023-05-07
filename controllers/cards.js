@@ -104,7 +104,11 @@ module.exports.dislikeCard = (req, res) => {
     { $pull: { likes: req.user._id } }, // убрать _id из массива
     { new: true }
   )
-    .orFail()
+    .orFail(() => {
+      const newError = new Error();
+      newError.name = 'DocumentNotFoundError';
+      throw newError;
+    })
     .then((card) => res.send(card))
     .catch((err) => {
       if (res.status(err.name === 'CastError')) {
