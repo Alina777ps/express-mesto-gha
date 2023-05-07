@@ -9,6 +9,7 @@ module.exports.getUser = (req, res) => {
 
 module.exports.getUserId = (req, res) => {
   User.findById(req.params.userId)
+    .orFail()
     .then((user) => res.status(200).send(user))
     .catch((err) => {
       if (err.name === 'CastError') {
