@@ -109,7 +109,13 @@ module.exports.dislikeCard = (req, res) => {
       newError.name = 'DocumentNotFoundError';
       throw newError;
     })
-    .then((card) => res.send(card))
+    .then((card) => {
+      if (!card) {
+        res.send({ message: 'Карточка не найдена' });
+      } else {
+        res.send(card);
+      }
+    })
     .catch((err) => {
       if (res.status(err.name === 'CastError')) {
         return res.status(BAD_REQUEST_ERROR).send({
