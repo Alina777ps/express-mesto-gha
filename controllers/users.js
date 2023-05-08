@@ -8,13 +8,11 @@ const {
 module.exports.getUser = (req, res) => {
   User.find({})
     .then((users) => res.send(users))
-    .catch((err) =>
-      res
-        .status(INTERNAL_SERVER_ERROR)
-        .send({
-          message: `Произошла ошибка по умолчанию ${err.name} c текстом ${err.message} и стектрейс ${err.stack}`,
-        })
-    );
+    .catch((err) => res
+      .status(INTERNAL_SERVER_ERROR)
+      .send({
+        message: 'На сервере произошла ошибка',
+      }));
 };
 
 module.exports.getUserId = (req, res) => {
@@ -37,7 +35,7 @@ module.exports.getUserId = (req, res) => {
       res
         .status(INTERNAL_SERVER_ERROR)
         .send({
-          message: `Произошла ошибка по умолчанию ${err.name} c текстом ${err.message} и стектрейс ${err.stack}`,
+          message: 'На сервере произошла ошибка',
         });
     });
 };
@@ -58,12 +56,12 @@ module.exports.createUser = (req, res) => {
       res
         .status(INTERNAL_SERVER_ERROR)
         .send({
-          message: `Произошла ошибка по умолчанию ${err.name} c текстом ${err.message} и стектрейс ${err.stack}`,
+          message: 'На сервере произошла ошибка',
         });
     });
 };
 
-//PATCH /users/me — обновляет профиль
+// PATCH /users/me — обновляет профиль
 module.exports.updateUser = (req, res) => {
   const { name, about } = req.body;
   User.findByIdAndUpdate(
@@ -72,7 +70,7 @@ module.exports.updateUser = (req, res) => {
     {
       new: true, // обработчик then получит на вход обновлённую запись
       runValidators: true, // данные будут валидированы перед изменением
-    }
+    },
   )
     .orFail()
     .then((user) => res.send(user))
@@ -92,12 +90,12 @@ module.exports.updateUser = (req, res) => {
       res
         .status(INTERNAL_SERVER_ERROR)
         .send({
-          message: `Произошла ошибка по умолчанию ${err.name} c текстом ${err.message} и стектрейс ${err.stack}`,
+          message: 'На сервере произошла ошибка',
         });
     });
 };
 
-//PATCH /users/me/avatar — обновляет аватар
+// PATCH /users/me/avatar — обновляет аватар
 module.exports.updateAvatar = (req, res) => {
   const { avatar } = req.body;
   User.findByIdAndUpdate(
@@ -106,7 +104,7 @@ module.exports.updateAvatar = (req, res) => {
     {
       new: true, // обработчик then получит на вход обновлённую запись
       runValidators: true, // данные будут валидированы перед изменением
-    }
+    },
   )
     .orFail()
     .then((user) => res.send(user))
@@ -126,7 +124,7 @@ module.exports.updateAvatar = (req, res) => {
       res
         .status(INTERNAL_SERVER_ERROR)
         .send({
-          message: `Произошла ошибка по умолчанию ${err.name} c текстом ${err.message} и стектрейс ${err.stack}`,
+          message: 'На сервере произошла ошибка',
         });
     });
 };

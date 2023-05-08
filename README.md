@@ -15,5 +15,5 @@
 - создание регистарации и авторизации
 - подключение фронтэнда
 
-## Данный проект можно поcмотреть по [ссылке](https://alina777ps.github.io/express-mesto-gha/)
+## Данный проект можно поcмотреть по [ссылке](https://github.com/Alina777ps/express-mesto-gha.git)
 

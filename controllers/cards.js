@@ -8,11 +8,9 @@ const {
 module.exports.getCard = (req, res) => {
   Card.find({})
     .then((cards) => res.send(cards))
-    .catch((err) =>
-      res.status(INTERNAL_SERVER_ERROR).send({
-        message: `Произошла ошибка ${err.name} c текстом ${err.message} и стектрейс ${err.stack}`,
-      })
-    );
+    .catch((err) => res.status(INTERNAL_SERVER_ERROR).send({
+      message: 'На сервере произошла ошибка',
+    }));
 };
 
 module.exports.createCard = (req, res) => {
@@ -33,7 +31,7 @@ module.exports.createCard = (req, res) => {
         });
       }
       res.status(INTERNAL_SERVER_ERROR).send({
-        message: `Произошла ошибка ${err.name} c текстом ${err.message} и стектрейс ${err.stack}`,
+        message: 'На сервере произошла ошибка',
       });
     });
 };
@@ -60,17 +58,17 @@ module.exports.deleteCard = (req, res) => {
           .send({ message: 'Передан несуществующий _id карточки.' });
       }
       res.status(INTERNAL_SERVER_ERROR).send({
-        message: `Произошла ошибка ${err.name} c текстом ${err.message} и стектрейс ${err.stack}`,
+        message: 'На сервере произошла ошибка',
       });
     });
 };
 
-//PUT /cards/:cardId/likes — поставить лайк карточке
+// PUT /cards/:cardId/likes — поставить лайк карточке
 module.exports.likeCard = (req, res) => {
   Card.findByIdAndUpdate(
     req.params.cardId,
     { $addToSet: { likes: req.user._id } }, // добавить _id в массив, если его там нет
-    { new: true }
+    { new: true },
   )
     .orFail()
     .then((card) => {
@@ -92,17 +90,17 @@ module.exports.likeCard = (req, res) => {
           .send({ message: 'Передан несуществующий _id карточки.' });
       }
       res.status(INTERNAL_SERVER_ERROR).send({
-        message: `Произошла ошибка ${err.name} c текстом ${err.message} и стектрейс ${err.stack}`,
+        message: 'На сервере произошла ошибка',
       });
     });
 };
 
-//DELETE /cards/:cardId/likes — убрать лайк с карточки
+// DELETE /cards/:cardId/likes — убрать лайк с карточки
 module.exports.dislikeCard = (req, res) => {
   Card.findByIdAndUpdate(
     req.params.cardId,
     { $pull: { likes: req.user._id } }, // убрать _id из массива
-    { new: true }
+    { new: true },
   )
     .orFail(() => {
       const newError = new Error();
@@ -119,7 +117,7 @@ module.exports.dislikeCard = (req, res) => {
     .catch((err) => {
       if (err.name === 'CastError') {
         return res.status(BAD_REQUEST_ERROR).send({
-          message: 'Переданы некорректные данные для постановки/снятии лайка.'
+          message: 'Переданы некорректные данные для постановки/снятии лайка.',
         });
       }
       if (err.name === 'DocumentNotFoundError') {
@@ -128,7 +126,7 @@ module.exports.dislikeCard = (req, res) => {
           .send({ message: 'Передан несуществующий _id карточки.' });
       }
       res.status(INTERNAL_SERVER_ERROR).send({
-        message: `Произошла ошибка ${err.name} c текстом ${err.message} и стектрейс ${err.stack}`,
+        message: 'На сервере произошла ошибка',
       });
     });
 };
