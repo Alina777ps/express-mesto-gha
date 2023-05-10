@@ -4,7 +4,7 @@ const bodyParser = require('body-parser');
 const mongoose = require('mongoose');
 
 const {
-  PORT
+  PORT,
 } = require('./config');
 
 const router = require('./routes/index');
