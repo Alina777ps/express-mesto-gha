@@ -4,8 +4,7 @@ const bodyParser = require('body-parser');
 const mongoose = require('mongoose');
 
 const {
-  PORT,
-  BD,
+  PORT
 } = require('./config');
 
 const router = require('./routes/index');
@@ -15,7 +14,7 @@ const app = express();
 // const PORT = process.env.PORT || 3001;
 // const { BD } = process.env;
 
-mongoose.connect(BD)
+mongoose.connect('mongodb://127.0.0.1:27017/mestodb')
   .then(() => {
     console.log('БД подключена');
   })
