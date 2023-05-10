@@ -1,14 +1,19 @@
-require('dotenv').config();
+// require('dotenv').config();
 const express = require('express');
 const bodyParser = require('body-parser');
 const mongoose = require('mongoose');
+
+const {
+  PORT,
+  BD,
+} = require('./config');
 
 const router = require('./routes/index');
 
 const app = express();
 
-const PORT = process.env.PORT || 3001;
-const { BD } = process.env;
+// const PORT = process.env.PORT || 3001;
+// const { BD } = process.env;
 
 mongoose.connect(BD)
   .then(() => {
