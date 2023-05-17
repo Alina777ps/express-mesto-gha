@@ -7,6 +7,13 @@ const {
   PORT,
 } = require('./config');
 
+const {
+  createUser,
+  login,
+} = require('./controllers/users');
+
+const auth = require('./middlewares/auth');
+
 const router = require('./routes/index');
 
 const app = express();
@@ -33,6 +40,13 @@ app.use((req, res, next) => {
 });
 
 // app.use(express.static(path.join(__dirname, "public")));
+
+// роуты, не требующие авторизации
+app.post('/signin', login);
+app.post('/signup', createUser);
+
+// авторизация
+app.use(auth);
 
 app.use(router);
 
