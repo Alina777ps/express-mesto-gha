@@ -1,5 +1,4 @@
-const jwt = require('jsonwebtoken');
-const { isAuthorized } = require(../utils/jwt);
+const { isAuthorized } = require('../utils/jwt');
 
 const {
   UNAUTHORIZED,
@@ -11,7 +10,7 @@ const handleAuthError = (res) => {
     .send({ message: 'Необходима авторизация' });
 };
 
-module.exports = async (req, res, next) => {
+module.exports = (req, res, next) => {
   const { authorization } = req.headers;
 
   if (!authorization || !authorization.startsWith('Bearer ')) {
@@ -22,12 +21,12 @@ module.exports = async (req, res, next) => {
   let payload;
 
   try {
-    payload = jwt.verify(token, 'some-secret-key');
+    payload = isAuthorized(token);
   } catch (err) {
     return handleAuthError(res);
   }
 
-  req.user = payload; // записываем пейлоуд в объект запроса
+  req.user = payload;
 
-  next(); // пропускаем запрос дальше
+  return next();
 };

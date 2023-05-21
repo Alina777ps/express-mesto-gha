@@ -1,5 +1,6 @@
 const bcrypt = require('bcryptjs');
 // const jwt = require('jsonwebtoken');
+const { getJwtToken } = require('../utils/jwt');
 
 const User = require('../models/user');
 const {
@@ -47,6 +48,7 @@ module.exports.getUserId = (req, res) => {
     });
 };
 
+// регистрация
 module.exports.createUser = (req, res) => {
   bcrypt.hash(req.body.password, SALT_ROUNDS)
     .then((hash) => User.create({
@@ -148,35 +150,54 @@ module.exports.updateAvatar = (req, res) => {
     });
 };
 
-module.exports.login = (req, res) => {
+module.exports.login = (req, res, next) => {
   const { email, password } = req.body;
-  if (!email || !password) return res.ststus(BAD_REQUEST_ERROR).send({ message: 'Email или пароль не могут быть пустыми' });
+  if (!email || !password) return res.status(BAD_REQUEST_ERROR).send({ message: 'Email или пароль не могут быть пустыми' });
 
   User.findOne({ email })
     .then((user) => {
-      if (!user) { return res.ststus(UNAUTHORIZED).send({ message: 'Неправильные почта или пароль' }); }
+      if (!user) return res.status(UNAUTHORIZED).send({ message: 'Неправильные почта или пароль' });
       return bcrypt.compare(password, user.password)
         .then((matched) => {
-          if (!matched) return res.ststus(UNAUTHORIZED).send({ message: 'Неправильные почта или пароль' });
-          return res.send(user);
+          if (!matched) return res.status(UNAUTHORIZED).send({ message: 'Неправильные почта или пароль' });
+          const token = getJwtToken(user._id);
+          console.log(user._id);
+          return res.send({ token });
         });
-    });
+    })
+    .catch(next);
 };
-/* .then((user) => {
-      const token = jwt.sign({ _id: user._id }, 'some-secret-key', { expiresIn: '7d' });
-      res.send({ token });
+
+// GET /users/me - возвращает информацию о текущем пользователе
+module.exports.getUserInfo = (req, res, next) => {
+  User.findById(req.params.userId)
+    .orFail()
+    .then((user) => {
+      if (user) {
+        res.status(200).send(user);
+      } else {
+        res
+          .status(NOT_FOUND)
+          .send({ message: 'Пользователь с указанным _id не найден.' });
+      }
     })
     .catch((err) => {
-      if (err.name === 'Unauthorized') {
+      if (err.name === 'CastError') {
         return res
-          .status(UNAUTHORIZED)
+          .status(BAD_REQUEST_ERROR)
           .send({
-            message: 'Указанные имя пользователя и пароль не верны.',
+            message: 'Некорректные данные при поиске пользователя по _id',
           });
+      }
+      if (err.name === 'DocumentNotFoundError') {
+        return res
+          .status(NOT_FOUND)
+          .send({ message: 'Пользователь по указанному _id не найден.' });
       }
       res
         .status(INTERNAL_SERVER_ERROR)
         .send({
           message: 'На сервере произошла ошибка',
         });
-    }); */
+    });
+};

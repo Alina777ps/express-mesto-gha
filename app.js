@@ -31,19 +31,11 @@ mongoose.connect('mongodb://127.0.0.1:27017/mestodb')
 
 app.use(bodyParser.json());
 
-app.use((req, res, next) => {
-  req.user = {
-    _id: '6454a9d80f882c481aa1cd90',
-  };
-
-  next();
-});
-
 // app.use(express.static(path.join(__dirname, "public")));
 
 // роуты, не требующие авторизации
-app.post('/signin', login);
 app.post('/signup', createUser);
+app.post('/signin', login);
 
 // авторизация
 app.use(auth);
