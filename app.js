@@ -7,7 +7,7 @@ const { celebrate, Joi } = require('celebrate');
 
 const { regexUrl } = require('./utils/regularExpression');
 
-const { NotFoundError } = require('./errors/NotFoundError');
+// const { NotFoundError } = require('./errors/NotFoundError');
 
 const {
   PORT,
@@ -61,12 +61,6 @@ app.post('/signin', celebrate({
 app.use(auth);
 
 app.use(router);
-
-const pageNotFound = (req, res, next) => {
-  throw new NotFoundError('Страница не найдена.');
-};
-
-app.get('/*', pageNotFound);
 
 // app.get("/*", (req, res, next) => next(new NotFoundError('Страница не найдена.')));
 
