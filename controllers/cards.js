@@ -14,8 +14,9 @@ module.exports.getCard = (req, res, next) => {
 
 module.exports.createCard = (req, res, next) => {
   const { name, link } = req.body;
-  const owner = req.user;
-  Card.create({ name, link, owner })
+  const { userId } = req.user;
+
+  Card.create({ name, link, owner: userId })
     .then((card) => {
       res.send(card);
     })
@@ -38,7 +39,7 @@ module.exports.deleteCard = (req, res, next) => {
     .orFail()
     .then((card) => {
       if (!card) {
-        res.send({ message: 'Карточка не найдена' });
+        throw new NotFoundError('Передан несуществующий _id карточки.');
       } else {
         res.send(card);
       }
@@ -48,9 +49,6 @@ module.exports.deleteCard = (req, res, next) => {
         next(new BadRequestError(
           'Переданы некорректные данные карточки.',
         ));
-      }
-      if (err.name === 'DocumentNotFoundError') {
-        next(new NotFoundError('Передан несуществующий _id карточки.'));
       } else {
         return next(err);
       }
@@ -69,7 +67,7 @@ module.exports.likeCard = (req, res, next) => {
     .orFail()
     .then((card) => {
       if (!card) {
-        res.send({ message: 'Карточка не найдена' });
+        throw new NotFoundError('Передан несуществующий _id карточки.');
       } else {
         res.send(card);
       }
@@ -79,9 +77,6 @@ module.exports.likeCard = (req, res, next) => {
         next(new BadRequestError(
           'Переданы некорректные данные для постановки/снятии лайка.',
         ));
-      }
-      if (err.name === 'DocumentNotFoundError') {
-        next(new NotFoundError('Передан несуществующий _id карточки.'));
       } else {
         next(err);
       }
@@ -102,7 +97,7 @@ module.exports.dislikeCard = (req, res, next) => {
     })
     .then((card) => {
       if (!card) {
-        res.send({ message: 'Карточка не найдена' });
+        throw new NotFoundError('Передан несуществующий _id карточки.');
       } else {
         res.send(card);
       }
@@ -110,9 +105,6 @@ module.exports.dislikeCard = (req, res, next) => {
     .catch((err) => {
       if (err.name === 'CastError') {
         next(new BadRequestError('Переданы некорректные данные для постановки/снятии лайка.'));
-      }
-      if (err.name === 'DocumentNotFoundError') {
-        next(new NotFoundError('Передан несуществующий _id карточки.'));
       } else {
         next(err);
       }

@@ -38,23 +38,27 @@ module.exports.getUserId = (req, res, next) => {
 
 // регистрация
 module.exports.createUser = (req, res, next) => {
+  const {
+    name, about, avatar, email, password,
+  } = req.body;
+
   bcrypt
-    .hash(req.body.password, SALT_ROUNDS)
+    .hash(password, SALT_ROUNDS)
     .then((hash) => User.create({
-      name: req.body.name,
-      about: req.body.about,
-      avatar: req.body.avatar,
-      email: req.body.email,
+      name,
+      about,
+      avatar,
+      email,
       password: hash, // записываем хеш в базу
     }))
     .then((user) => {
       const { _id } = user;
 
       return res.status(201).send({
-        name: req.body.name,
-        about: req.body.about,
-        avatar: req.body.avatar,
-        email: req.body.email,
+        name,
+        about,
+        avatar,
+        email,
         _id,
         message: 'Пользователь успешно создан',
       });
@@ -86,16 +90,15 @@ module.exports.updateUser = (req, res, next) => {
     },
   )
     .orFail()
-    .then((user) => res.send(user))
+    .then((user) => {
+      if (user) return res.send({ user });
+
+      throw new NotFoundError('Пользователь по указанному _id не найден.');
+    })
     .catch((err) => {
       if (err.name === 'CastError' || err.name === 'ValidationError') {
         next(new BadRequestError(
           'Переданы некорректные данные при обновлении профиля.',
-        ));
-      }
-      if (err.name === 'DocumentNotFoundError') {
-        next(new NotFoundError(
-          'Пользователь по указанному _id не найден.',
         ));
       } else {
         next(err);
@@ -116,7 +119,11 @@ module.exports.updateAvatar = (req, res, next) => {
     },
   )
     .orFail()
-    .then((user) => res.send(user))
+    .then((user) => {
+      if (user) return res.send({ user });
+
+      throw new NotFoundError('Пользователь с указанным _id не найден.');
+    })
     .catch((err) => {
       if (err.name === 'ValidationError') {
         next(new BadRequestError(
