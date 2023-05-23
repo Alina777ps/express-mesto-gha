@@ -6,13 +6,13 @@ const userSchema = new mongoose.Schema(
     name: {
       type: String,
       default: 'Жак-Ив Кусто',
-      minlength: 2,
+      minlength: [2, 'Минимальная длинна 2 символа'],
       maxlength: 30,
     },
     about: {
       type: String,
       default: 'Исследователь',
-      minlength: 2,
+      minlength: [2, 'Минимальная длинна 2 символа'],
       maxlength: 30,
     },
     avatar: {
@@ -25,7 +25,7 @@ const userSchema = new mongoose.Schema(
     },
     email: {
       type: String,
-      required: true,
+      required: [true, 'Введите email'],
       unique: true,
       validate: {
         validator: (email) => validator.isEmail(email),
@@ -34,8 +34,9 @@ const userSchema = new mongoose.Schema(
     },
     password: {
       type: String,
-      required: true,
+      required: [true, 'Введите пароль'],
       minlength: 2,
+      select: false, // чтобы API не возвращал хеш пароля
     },
   },
   { versionKey: false },

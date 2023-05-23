@@ -2,6 +2,8 @@
 const express = require('express');
 const bodyParser = require('body-parser');
 const mongoose = require('mongoose');
+const { errors } = require('celebrate');
+const { celebrate, Joi } = require('celebrate');
 
 const {
   PORT,
@@ -34,12 +36,42 @@ app.use(bodyParser.json());
 // app.use(express.static(path.join(__dirname, "public")));
 
 // роуты, не требующие авторизации
-app.post('/signup', createUser);
-app.post('/signin', login);
+app.post('/signup', celebrate({
+  body: Joi.object().keys({
+    name: Joi.string().min(2).max(30),
+    about: Joi.string().min(2).max(30),
+    avatar: Joi.string(),
+    email: Joi.string().required().email(),
+    password: Joi.string().required().min(2),
+  }),
+}), createUser);
+
+app.post('/signin', celebrate({
+  body: Joi.object().keys({
+    email: Joi.string().required().email(),
+    password: Joi.string().required().min(2),
+  }),
+}), login);
 
 // авторизация
 app.use(auth);
 
 app.use(router);
+
+app.use(errors());
+
+app.use((err, req, res, next) => {
+  // если у ошибки нет статуса, выставляем 500
+  const { statusCode = 500, message } = err;
+
+  res
+    .status(statusCode)
+    .send({
+      // проверяем статус и выставляем сообщение в зависимости от него
+      message: statusCode === 500
+        ? 'На сервере произошла ошибка'
+        : message,
+    });
+});
 
 app.listen(PORT, () => console.log(`Web app available at http://127.0.0.1:${PORT}`));

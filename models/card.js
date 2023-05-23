@@ -5,13 +5,13 @@ const cardSchema = new mongoose.Schema(
   {
     name: {
       type: String,
-      required: true,
-      minlength: 2,
+      required: [true, 'Введите название'],
+      minlength: [2, 'Минимальная длинна 2 символа'],
       maxlength: 30,
     },
     link: {
       type: String,
-      required: true,
+      required: [true, 'Введите URL'],
       validate: {
         validator: (url) => validator.isURL(url),
         message: 'Введите адрес URL',
