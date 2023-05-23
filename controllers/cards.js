@@ -4,6 +4,7 @@ const BadRequestError = require('../errors/BadRequestError');
 // const UnauthorizedError = require('../errors/UnauthorizedError');
 const NotFoundError = require('../errors/NotFoundError');
 // const ConflictError = require('../errors/ConflictError');
+const ForbiddenError = require('../errors/ForbiddenError');
 
 module.exports.getCard = (req, res, next) => {
   Card.find({})
@@ -34,12 +35,13 @@ module.exports.createCard = (req, res, next) => {
 };
 
 module.exports.deleteCard = (req, res, next) => {
-  const { cardId } = req.params;
-  Card.findByIdAndRemove(cardId)
+  Card.findByIdAndRemove(req.params.cardId)
     .orFail()
     .then((card) => {
       if (!card) {
         throw new NotFoundError('Передан несуществующий _id карточки.');
+      } if (card.owner !== req.user._id) {
+        throw new ForbiddenError('Вы не можете удалить эту карточку.');
       } else {
         res.send(card);
       }

@@ -1,9 +1,9 @@
 const { isAuthorized } = require('../utils/jwt');
 
-const { UNAUTHORIZED } = require('../errors/ConflictError');
+const UnauthorizedError = require('../errors/UnauthorizedError');
 
 const handleAuthError = (res) => {
-  res.status(UNAUTHORIZED).send({ message: 'Необходима авторизация' });
+  throw new UnauthorizedError('Необходима авторизация');
 };
 
 module.exports = (req, res, next) => {
