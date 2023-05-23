@@ -5,6 +5,8 @@ const mongoose = require('mongoose');
 const { errors } = require('celebrate');
 const { celebrate, Joi } = require('celebrate');
 
+const { regexUrl } = require('./utils/regularExpression');
+
 const {
   PORT,
 } = require('./config');
@@ -40,7 +42,7 @@ app.post('/signup', celebrate({
   body: Joi.object().keys({
     name: Joi.string().min(2).max(30),
     about: Joi.string().min(2).max(30),
-    avatar: Joi.string(),
+    avatar: Joi.string().pattern(regexUrl),
     email: Joi.string().required().email(),
     password: Joi.string().required().min(2),
   }),

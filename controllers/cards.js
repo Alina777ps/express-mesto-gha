@@ -7,13 +7,14 @@ const NotFoundError = require('../errors/NotFoundError');
 
 module.exports.getCard = (req, res, next) => {
   Card.find({})
+    .populate(['owner', 'likes'])
     .then((cards) => res.send(cards))
     .catch(next);
 };
 
 module.exports.createCard = (req, res, next) => {
   const { name, link } = req.body;
-  const owner = req.user._id;
+  const owner = req.user;
   Card.create({ name, link, owner })
     .then((card) => {
       res.send(card);
@@ -32,7 +33,8 @@ module.exports.createCard = (req, res, next) => {
 };
 
 module.exports.deleteCard = (req, res, next) => {
-  Card.findByIdAndRemove(req.params.cardId)
+  const { cardId } = req.params;
+  Card.findByIdAndRemove(cardId)
     .orFail()
     .then((card) => {
       if (!card) {
@@ -57,9 +59,11 @@ module.exports.deleteCard = (req, res, next) => {
 
 // PUT /cards/:cardId/likes — поставить лайк карточке
 module.exports.likeCard = (req, res, next) => {
+  const { cardId } = req.params;
+  const { userId } = req.user;
   Card.findByIdAndUpdate(
-    req.params.cardId,
-    { $addToSet: { likes: req.user._id } }, // добавить _id в массив, если его там нет
+    cardId,
+    { $addToSet: { likes: userId } }, // добавить _id в массив, если его там нет
     { new: true },
   )
     .orFail()

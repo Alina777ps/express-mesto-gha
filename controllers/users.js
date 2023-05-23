@@ -47,7 +47,18 @@ module.exports.createUser = (req, res, next) => {
       email: req.body.email,
       password: hash, // записываем хеш в базу
     }))
-    .then(() => res.send({ message: 'Пользователь успешно создан.' }))
+    .then((user) => {
+      const { _id } = user;
+
+      return res.status(201).send({
+        name: req.body.name,
+        about: req.body.about,
+        avatar: req.body.avatar,
+        email: req.body.email,
+        _id,
+        message: 'Пользователь успешно создан',
+      });
+    })
     .catch((err) => {
       if (err.code === 11000) {
         next(new ConflictError('Такой пользователь уже существует.'));
@@ -65,8 +76,9 @@ module.exports.createUser = (req, res, next) => {
 // PATCH /users/me — обновляет профиль
 module.exports.updateUser = (req, res, next) => {
   const { name, about } = req.body;
+  const { userId } = req.user;
   User.findByIdAndUpdate(
-    req.user._id,
+    userId,
     { name, about },
     {
       new: true, // обработчик then получит на вход обновлённую запись
@@ -94,8 +106,9 @@ module.exports.updateUser = (req, res, next) => {
 // PATCH /users/me/avatar — обновляет аватар
 module.exports.updateAvatar = (req, res, next) => {
   const { avatar } = req.body;
+  const { userId } = req.user;
   User.findByIdAndUpdate(
-    req.user._id,
+    userId,
     { avatar },
     {
       new: true, // обработчик then получит на вход обновлённую запись
@@ -138,7 +151,8 @@ module.exports.login = (req, res, next) => {
 
 // GET /users/me - возвращает информацию о текущем пользователе
 module.exports.getUserInfo = (req, res, next) => {
-  User.findById(req.params.userId)
+  const { userId } = req.user;
+  User.findById(userId)
     .orFail()
     .then((user) => {
       if (user) {
