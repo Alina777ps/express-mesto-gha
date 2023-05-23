@@ -62,7 +62,9 @@ app.use(auth);
 
 app.use(router);
 
-app.use((req, res, next) => next(new NotFoundError('Страница не найдена.')));
+app.get('/*', (req, res, next) => next(new NotFoundError('Страница не найдена.')));
+
+//app.get("/*", (req, res, next) => next(new NotFoundError('Страница не найдена.')));
 
 app.use(errors());
 
