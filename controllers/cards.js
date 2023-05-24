@@ -35,12 +35,16 @@ module.exports.createCard = (req, res, next) => {
 };
 
 module.exports.deleteCard = (req, res, next) => {
-  Card.findByIdAndRemove(req.params.cardId)
+  const { id: cardId } = req.params;
+  const { userId } = req.user;
+
+  Card.findByIdAndRemove({ id: cardId })
     .orFail()
     .then((card) => {
+      const { owner: cardOwnerId } = card;
       if (!card) {
         throw new NotFoundError('Передан несуществующий _id карточки.');
-      } if (card.owner !== req.user._id) {
+      } if (cardOwnerId.valueOf() !== userId) {
         throw new ForbiddenError('Вы не можете удалить эту карточку.');
       } else {
         res.send(card);
