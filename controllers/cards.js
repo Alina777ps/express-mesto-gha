@@ -37,7 +37,7 @@ module.exports.createCard = (req, res, next) => {
 };
 // удаление карточки '/:cardId'
 module.exports.deleteCard = (req, res, next) => {
-  const { id: cardId } = req.params;
+  const { cardId } = req.params;
   const { id } = req.user;
 
   Card.findByIdAndRemove(cardId)
@@ -91,6 +91,8 @@ module.exports.likeCard = (req, res, next) => {
         next(new BadRequestError(
           'Переданы некорректные данные для постановки/снятии лайка.',
         ));
+      } if (err.name === 'DocumentNotFoundError') {
+        next(new NotFoundError('Передан несуществующий _id карточки.'));
       } else {
         next(err);
       }
@@ -119,6 +121,8 @@ module.exports.dislikeCard = (req, res, next) => {
     .catch((err) => {
       if (err.name === 'CastError') {
         next(new BadRequestError('Переданы некорректные данные для постановки/снятии лайка.'));
+      } if (err.name === 'DocumentNotFoundError') {
+        next(new NotFoundError('Передан несуществующий _id карточки.'));
       } else {
         next(err);
       }
