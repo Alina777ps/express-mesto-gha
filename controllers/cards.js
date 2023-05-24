@@ -37,7 +37,7 @@ module.exports.createCard = (req, res, next) => {
 };
 // удаление карточки '/:cardId'
 module.exports.deleteCard = (req, res, next) => {
-  const { cardId } = req.params;
+  const { id: cardId } = req.params;
   const { id } = req.user;
 
   Card.findByIdAndRemove(cardId)

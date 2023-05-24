@@ -175,11 +175,11 @@ module.exports.getUserInfo = (req, res, next) => {
           'Некорректные данные при поиске пользователя по _id',
         ));
       }
-      /* if (err.name === 'DocumentNotFoundError') {
+      if (err.name === 'DocumentNotFoundError') {
         next(new NotFoundError(
           'Пользователь по указанному _id не найден.',
         ));
-      } */ else {
+      } else {
         next(err);
       }
     });
