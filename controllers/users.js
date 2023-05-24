@@ -157,7 +157,7 @@ module.exports.login = (req, res, next) => {
 };
 
 // GET /users/me - возвращает информацию о текущем пользователе
-module.exports.getUserInfo = (req, res, next) => {
+/* module.exports.getUserInfo = (req, res, next) => {
   const { id } = req.user;
   User.findById(id)
     .orFail()
@@ -165,7 +165,7 @@ module.exports.getUserInfo = (req, res, next) => {
       if (user) {
         res.status(200).send(user);
       } else {
-        throw new NotFoundError('Пользователь с указанным _id не найден.');
+        throw new NotFoundError('Пользователь с данным _id не найден.');
       }
     })
     .catch((err) => {
@@ -178,6 +178,26 @@ module.exports.getUserInfo = (req, res, next) => {
         next(new NotFoundError(
           'Пользователь по указанному _id не найден.',
         ));
+      } else {
+        next(err);
+      }
+    });
+}; */
+
+// поиск пользователя:
+module.exports.getUserInfo = (req, res, next) => {
+  const { id } = req.user;
+
+  User
+    .findById(id)
+    .then((user) => {
+      if (user) return res.send({ user });
+
+      throw new NotFoundError('Пользователь с таким id не найден');
+    })
+    .catch((err) => {
+      if (err.name === 'CastError') {
+        next(new BadRequestError('Передан некорректный id'));
       } else {
         next(err);
       }
