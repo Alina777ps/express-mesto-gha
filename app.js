@@ -7,7 +7,7 @@ const { celebrate, Joi } = require('celebrate');
 
 const { regexUrl } = require('./utils/regularExpression');
 
-// const { NotFoundError } = require('./errors/NotFoundError');
+const { NotFoundError } = require('./errors/NotFoundError');
 
 const {
   PORT,
@@ -18,7 +18,7 @@ const {
   login,
 } = require('./controllers/users');
 
-// const auth = require('./middlewares/auth');
+const auth = require('./middlewares/auth');
 
 const router = require('./routes/index');
 
@@ -58,11 +58,11 @@ app.post('/signin', celebrate({
 }), login);
 
 // авторизация
-// app.use(auth);
+app.use(auth);
 
 app.use(router);
 
-// app.get("/*", (req, res, next) => next(new NotFoundError('Страница не найдена.')));
+app.use('/*', (req, res, next) => next(new NotFoundError('Страница не найдена.')));
 
 app.use(errors());
 

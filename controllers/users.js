@@ -17,7 +17,7 @@ module.exports.getUser = (req, res, next) => {
 };
 
 module.exports.getUserId = (req, res, next) => {
-  User.findById(req.params.userId)
+  User.findById(req.params.id)
     .orFail()
     .then((user) => res.status(200).send(user))
     .catch((err) => {
@@ -52,14 +52,14 @@ module.exports.createUser = (req, res, next) => {
       password: hash, // записываем хеш в базу
     }))
     .then((user) => {
-      const { _id } = user;
+      const { id } = user;
 
       return res.status(201).send({
         name,
         about,
         avatar,
         email,
-        _id,
+        id,
         message: 'Пользователь успешно создан',
       });
     })
@@ -80,9 +80,9 @@ module.exports.createUser = (req, res, next) => {
 // PATCH /users/me — обновляет профиль
 module.exports.updateUser = (req, res, next) => {
   const { name, about } = req.body;
-  const { userId } = req.user;
+  const { id } = req.user;
   User.findByIdAndUpdate(
-    userId,
+    id,
     { name, about },
     {
       new: true, // обработчик then получит на вход обновлённую запись
@@ -109,9 +109,9 @@ module.exports.updateUser = (req, res, next) => {
 // PATCH /users/me/avatar — обновляет аватар
 module.exports.updateAvatar = (req, res, next) => {
   const { avatar } = req.body;
-  const { userId } = req.user;
+  const { id } = req.user;
   User.findByIdAndUpdate(
-    userId,
+    id,
     { avatar },
     {
       new: true, // обработчик then получит на вход обновлённую запись
@@ -149,7 +149,7 @@ module.exports.login = (req, res, next) => {
       if (!user) throw new UnauthorizedError('Неправильные почта или пароль');
       return bcrypt.compare(password, user.password).then((matched) => {
         if (!matched) throw new UnauthorizedError('Неправильные почта или пароль');
-        const token = getJwtToken(user._id);
+        const token = getJwtToken(user.id);
         return res.send({ token });
       });
     })
@@ -158,8 +158,8 @@ module.exports.login = (req, res, next) => {
 
 // GET /users/me - возвращает информацию о текущем пользователе
 module.exports.getUserInfo = (req, res, next) => {
-  const { userId } = req.user;
-  User.findById(userId)
+  const { id } = req.user;
+  User.findById(id)
     .orFail()
     .then((user) => {
       if (user) {

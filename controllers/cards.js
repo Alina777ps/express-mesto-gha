@@ -15,10 +15,12 @@ module.exports.getCard = (req, res, next) => {
 
 module.exports.createCard = (req, res, next) => {
   const { name, link } = req.body;
-  const { userId } = req.user;
+  const { id } = req.user;
+  console.log(id);
 
-  Card.create({ name, link, owner: userId })
+  Card.create({ name, link, owner: id })
     .then((card) => {
+      console.log(card);
       res.send(card);
     })
     .catch((err) => {
@@ -26,7 +28,7 @@ module.exports.createCard = (req, res, next) => {
         res.status(err.name === 'CastError' || err.name === 'ValidationError')
       ) {
         next(new BadRequestError(
-          'Переданы некорректные данные при создании карточки.',
+          `Переданы некорректные данные при создании карточки ${err.name}.`,
         ));
       } else {
         next(err);
@@ -36,7 +38,7 @@ module.exports.createCard = (req, res, next) => {
 
 module.exports.deleteCard = (req, res, next) => {
   const { _id: cardId } = req.params;
-  const { userId } = req.user;
+  const { id } = req.user;
 
   Card.findByIdAndRemove({ _id: cardId })
     .orFail()
@@ -44,7 +46,7 @@ module.exports.deleteCard = (req, res, next) => {
       const { owner: cardOwnerId } = card;
       if (!card) {
         throw new NotFoundError('Передан несуществующий _id карточки.');
-      } if (cardOwnerId.valueOf() !== userId) {
+      } if (cardOwnerId.valueOf() !== id) {
         throw new ForbiddenError('Вы не можете удалить эту карточку.');
       } else {
         res.send(card);
@@ -64,10 +66,10 @@ module.exports.deleteCard = (req, res, next) => {
 // PUT /cards/:cardId/likes — поставить лайк карточке
 module.exports.likeCard = (req, res, next) => {
   const { cardId } = req.params;
-  const { userId } = req.user;
+  const { id } = req.user;
   Card.findByIdAndUpdate(
     cardId,
-    { $addToSet: { likes: userId } }, // добавить _id в массив, если его там нет
+    { $addToSet: { likes: id } }, // добавить _id в массив, если его там нет
     { new: true },
   )
     .orFail()
