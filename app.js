@@ -18,7 +18,7 @@ const {
   login,
 } = require('./controllers/users');
 
-const auth = require('./middlewares/auth');
+// const auth = require('./middlewares/auth');
 
 const router = require('./routes/index');
 
@@ -58,7 +58,7 @@ app.post('/signin', celebrate({
 }), login);
 
 // авторизация
-app.use(auth);
+// app.use(auth);
 
 app.use(router);
 
