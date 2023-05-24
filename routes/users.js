@@ -14,7 +14,7 @@ const {
 
 router.get('/', getUser);
 
-router.get('/:userId', celebrate({
+router.get('/:id', celebrate({
   body: Joi.object().keys({
     _id: Joi.string().length(24).hex().required(),
   }),
