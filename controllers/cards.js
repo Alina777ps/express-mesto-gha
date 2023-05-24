@@ -35,10 +35,10 @@ module.exports.createCard = (req, res, next) => {
 };
 
 module.exports.deleteCard = (req, res, next) => {
-  const { id: cardId } = req.params;
+  const { _id: cardId } = req.params;
   const { userId } = req.user;
 
-  Card.findByIdAndRemove({ id: cardId })
+  Card.findByIdAndRemove({ _id: cardId })
     .orFail()
     .then((card) => {
       const { owner: cardOwnerId } = card;
