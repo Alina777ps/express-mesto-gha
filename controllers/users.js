@@ -17,19 +17,19 @@ module.exports.getUser = (req, res, next) => {
 };
 
 module.exports.getUserId = (req, res, next) => {
-  const { id } = req.user;
+  const { id } = req.params;
   User.findById(id)
     .orFail()
     .then((user) => res.status(200).send(user))
     .catch((err) => {
       if (err.name === 'CastError') {
         next(new BadRequestError(
-          'getUserId Некорректные данные при поиске пользователя по _id',
+          'Некорректные данные при поиске пользователя по _id',
         ));
       }
       if (err.name === 'DocumentNotFoundError') {
         next(new NotFoundError(
-          'getUserId Пользователь по указанному id не найден.',
+          'Пользователь по указанному id не найден.',
         ));
       } else {
         next(err);
@@ -175,13 +175,12 @@ module.exports.getUserInfo = (req, res, next) => {
           'Некорректные данные при поиске пользователя по _id',
         ));
       }
-      if (err.name === 'DocumentNotFoundError') {
+      /* if (err.name === 'DocumentNotFoundError') {
         next(new NotFoundError(
           'Пользователь по указанному _id не найден.',
         ));
-      } else {
+      } */ else {
         next(err);
       }
     });
 };
-
