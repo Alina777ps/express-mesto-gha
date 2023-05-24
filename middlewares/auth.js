@@ -1,4 +1,8 @@
-const { isAuthorized } = require('../utils/jwt');
+// const { isAuthorized } = require('../utils/jwt');
+
+const jwt = require('jsonwebtoken');
+
+const { JWT_SECRET } = require('../config');
 
 const UnauthorizedError = require('../errors/UnauthorizedError');
 
@@ -17,13 +21,13 @@ module.exports = (req, res, next) => {
   let payload;
 
   try {
-    payload = isAuthorized(token);
+    payload = jwt.verify(token, JWT_SECRET);
+    // payload = await isAuthorized(token);
   } catch (err) {
     return handleAuthError(res);
   }
 
   req.user = payload;
-  console.log(req.user);
 
   return next();
 };
