@@ -44,8 +44,11 @@ module.exports.deleteCard = (req, res, next) => {
     .orFail()
     .then((card) => {
       const { owner: cardOwnerId } = card;
-      if (!card) {
+      /* if (!card) {
         throw new NotFoundError('Передан несуществующий _id карточки.');
+      } */
+      if (!card) {
+        throw new NotFoundError('Данные по указанному id не найдены');
       } if (cardOwnerId.valueOf() !== id) {
         throw new ForbiddenError('Вы не можете удалить эту карточку.');
       } else {

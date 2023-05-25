@@ -62,7 +62,7 @@ app.use(auth);
 
 app.use(router);
 
-app.use((req, res, next) => next(new NotFoundError('Страница не найдена.')));
+app.use('/*', (req, res, next) => next(new NotFoundError('Страница не найдена.')));
 
 app.use(errors());
 
@@ -75,7 +75,7 @@ app.use((err, req, res, next) => {
     .send({
       // проверяем статус и выставляем сообщение в зависимости от него
       message: statusCode === 500
-        ? 'На сервере произошла ошибка'
+        ? `На сервере произошла ошибка ${err.message}`
         : message,
     });
 });
