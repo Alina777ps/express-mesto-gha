@@ -26,8 +26,7 @@ module.exports.getUserId = (req, res, next) => {
         next(new BadRequestError(
           'getUserId Некорректные данные при поиске пользователя по _id',
         ));
-      }
-      if (err.name === 'DocumentNotFoundError') {
+      } else if (err.name === 'DocumentNotFoundError') {
         next(new NotFoundError(
           'Пользователь по указанному id не найден.',
         ));
@@ -67,8 +66,7 @@ module.exports.createUser = (req, res, next) => {
     .catch((err) => {
       if (err.code === 11000) {
         next(new ConflictError('Такой пользователь уже существует.'));
-      }
-      if (err.name === 'ValidationError') {
+      } else if (err.name === 'ValidationError') {
         next(new BadRequestError(
           'Переданы некорректные данные при создании пользователя.',
         ));
@@ -91,11 +89,7 @@ module.exports.updateUser = (req, res, next) => {
     },
   )
     .orFail()
-    .then((user) => {
-      if (user) return res.send({ user });
-
-      throw new NotFoundError('Пользователь по указанному _id не найден.');
-    })
+    .then((user) => res.send({ user }))
     .catch((err) => {
       if (err.name === 'CastError' || err.name === 'ValidationError') {
         next(new BadRequestError(
@@ -120,18 +114,14 @@ module.exports.updateAvatar = (req, res, next) => {
     },
   )
     .orFail()
-    .then((user) => {
-      if (user) return res.send({ user });
-
-      throw new NotFoundError('Пользователь с указанным _id не найден.');
-    })
+    .then((user) => res.send({ user }))
     .catch((err) => {
-      if (err.name === 'ValidationError') {
+      if (err.name === 'ValidationError' || err.name === 'CastError') {
         next(new BadRequestError(
           'Переданы некорректные данные при обновлении аватара.',
         ));
       }
-      if (err.name === 'CastError') {
+      if (err.name === 'DocumentNotFoundError') {
         next(new NotFoundError(
           'Пользователь с указанным _id не найден.',
         ));
@@ -143,7 +133,6 @@ module.exports.updateAvatar = (req, res, next) => {
 
 module.exports.login = (req, res, next) => {
   const { email, password } = req.body;
-  if (!email || !password) throw new BadRequestError('Email или пароль не могут быть пустыми');
 
   User.findOne({ email }).select('+password')
     .then((user) => {
@@ -160,20 +149,17 @@ module.exports.login = (req, res, next) => {
 // GET /users/me - возвращает информацию о текущем пользователе
 module.exports.getUserInfo = (req, res, next) => {
   const { id } = req.user;
-  console.log(id);
   User.findById(id)
     .orFail()
-    .then((user) => {
-      if (user) {
-        res.status(200).send(user);
-      } else {
-        throw new NotFoundError('Пользователь с данным _id не найден.');
-      }
-    })
+    .then((user) => res.status(200).send(user))
     .catch((err) => {
       if (err.name === 'CastError') {
         next(new BadRequestError(
           'Некорректные данные при поиске пользователя по _id',
+        ));
+      } else if (err.name === 'DocumentNotFoundError') {
+        next(new NotFoundError(
+          'Пользователь с данным _id не найден.',
         ));
       } else {
         next(err);

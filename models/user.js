@@ -35,7 +35,6 @@ const userSchema = new mongoose.Schema(
     password: {
       type: String,
       required: [true, 'Введите пароль'],
-      minlength: 2,
       select: false, // чтобы API не возвращал хеш пароля
     },
   },

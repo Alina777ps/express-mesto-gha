@@ -46,14 +46,14 @@ app.post('/signup', celebrate({
     about: Joi.string().min(2).max(30),
     avatar: Joi.string().pattern(regexUrl),
     email: Joi.string().required().email(),
-    password: Joi.string().required().min(2),
+    password: Joi.string().required(),
   }),
 }), createUser);
 
 app.post('/signin', celebrate({
   body: Joi.object().keys({
     email: Joi.string().required().email(),
-    password: Joi.string().required().min(2),
+    password: Joi.string().required(),
   }),
 }), login);
 
@@ -66,7 +66,7 @@ app.use('/*', (req, res, next) => next(new NotFoundError('Страница не 
 
 app.use(errors());
 
-app.use((err, req, res, next) => {
+app.use((err, req, res) => {
   // если у ошибки нет статуса, выставляем 500
   const { statusCode = 500, message } = err;
 
