@@ -7,7 +7,7 @@ const { celebrate, Joi } = require('celebrate');
 
 const { regexUrl } = require('./utils/regularExpression');
 
-const { NotFoundError } = require('./errors/NotFoundError');
+const NotFoundError = require('./errors/NotFoundError');
 
 const {
   PORT,
