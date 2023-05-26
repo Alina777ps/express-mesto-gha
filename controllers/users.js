@@ -29,7 +29,7 @@ module.exports.getUserId = (req, res, next) => {
       }
       if (err.name === 'DocumentNotFoundError') {
         next(new NotFoundError(
-          'getUserId Пользователь по указанному id не найден.',
+          'Пользователь по указанному id не найден.',
         ));
       } else {
         next(err);
