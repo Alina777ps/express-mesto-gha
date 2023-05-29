@@ -90,20 +90,21 @@ module.exports.likeCard = (req, res, next) => {
     });
 };
 
-// DELETE /cards/:cardId/likes — убрать лайк с карточки
 module.exports.dislikeCard = (req, res, next) => {
-  Card.findByIdAndUpdate(
-    req.params.cardId,
-    { $pull: { likes: req.user._id } }, // убрать _id из массива
-    { new: true },
-  )
-    .orFail()
-    .then((card) => res.send(card))
+  Card
+    .findByIdAndUpdate(
+      req.params.cardId,
+      { $pull: { likes: req.user._id } }, // убрать _id из массива
+      { new: true },
+    )
+    .then((card) => {
+      if (card) return res.send(card);
+
+      throw new NotFoundError('Передан несуществующий _id карточки.');
+    })
     .catch((err) => {
-      if (err.name === 'CastError') {
+      if (err.name === 'ValidationError' || err.name === 'CastError') {
         next(new BadRequestError('Переданы некорректные данные для постановки/снятии лайка.'));
-      } else if (err.name === 'DocumentNotFoundError') {
-        next(new NotFoundError('Передан несуществующий _id карточки.'));
       } else {
         next(err);
       }
