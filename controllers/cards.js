@@ -45,12 +45,6 @@ module.exports.deleteCard = (req, res, next) => {
         throw new ForbiddenError('Вы не можете удалить эту карточку.');
       } return Card.findByIdAndDelete(cardId);
     })
-    .then((deletedCard) => {
-      if (!deletedCard) {
-        throw new NotFoundError('Карточка уже удалена');
-      }
-      res.send(deletedCard);
-    })
     .catch((err) => {
       if (err.name === 'CastError') {
         next(new BadRequestError(
