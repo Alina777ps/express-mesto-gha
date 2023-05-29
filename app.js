@@ -66,7 +66,8 @@ app.use('/*', (req, res, next) => next(new NotFoundError('Страница не 
 
 app.use(errors());
 
-app.use((err, req, res) => {
+// eslint-disable-next-line no-unused-vars
+app.use((err, req, res, next) => {
   // если у ошибки нет статуса, выставляем 500
   const { statusCode = 500, message } = err;
 
@@ -75,7 +76,7 @@ app.use((err, req, res) => {
     .send({
       // проверяем статус и выставляем сообщение в зависимости от него
       message: statusCode === 500
-        ? `На сервере произошла ошибка ${err.name} ${err.message}`
+        ? 'На сервере произошла ошибка'
         : message,
     });
 });
